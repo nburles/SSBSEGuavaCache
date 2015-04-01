@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#$1 == initialCapacity
+#$2 == concurrencyLevel
+#$3 == maximumSize
+#$4 == expireAfterWriteNanos
+#$5 == expireAfterAccessNanos
+#$6 == refreshNanos
+#$7 == keyStrength ("WEAK", "SOFT", or "STRONG")
+#$8 == valueStrength ("WEAK", "SOFT", or "STRONG")
+
+
+#This is your access point. Insert the code here which can produce a fitness value (a double, higher means better, this may mean you having to take the reciprocal value of what you get). The fitness value should be send to the standard output for ECJ to read
+
+#Just a silly example here currently, change as is required
+fitness=$(echo "$1+$2+$3+$4+$5+$6"| bc -l)
+echo $fitness
+

@@ -1,0 +1,18 @@
+First of all, I have included ECP in lib. Add this to your java class path. For Mac (and possibly other *nix systems?) you can move jar/ecj.22.jar to /Library/Java/Extensions 
+
+
+Now for running and understanding my implementation
+- Navigate to src/cs/crest/cachetune
+
+- Here is a simple explanation of the components:
+
+-- params.params: the parameters file. Inside you should see parameters you can change. Some should be quite obvious GA parameters (Number of individuals, number of generations). Tune these as is appropriate. The max and minimum values are set here. Currently at 10,000 which is probably a bit low. Increase this as you need to
+
+--Prob.java/Prob.class: Essentially the fitness function. As far as i know you shouldn't have to modify this though the code is not very complex
+
+--ModifiedLongVectorIndividual.java/ModifiedLongVectorIndividual.class: Simply extends ECJ "LongVectorIndividual" so it prints out values in the way we want them
+
+--Evaluate: This is a bash script called by Prob.java to evaluate the fitness of individuals. Prob.java calls this script with the CacheBuilder parameters as arguments and expects a single double value to be returned to the standard output which it treats as the fitness. Assuming everything else is working correctly (no guarantees) then you only need to add to this script. Treat it as your entry point to the system. It's currently setup to return the sum of all the arguments added meaning the fitness function tends towards each CacheBuilder parameter being as high as possible.
+
+- To run I use the command 'java -classpath "../../.." ec.Evolve -file params.params'. Cntr-C to quit
+- Modify "Evaluate" as you see fit. I realise it may be inefficient for Java to run a script that, in turn, executes some Java code though I felt this method left us with the maximum amount of flexibility

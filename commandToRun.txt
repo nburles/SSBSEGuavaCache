@@ -1,0 +1,5 @@
+To Build:
+java -Xmx4G org.opentripplanner.standalone.OTPMain --build ~/Desktop/TriMet
+
+To Use:
+java -Xmx4G org.opentripplanner.standalone.OTPMain --graphs ~/Desktop/TriMet --router TriMet --analyst --server

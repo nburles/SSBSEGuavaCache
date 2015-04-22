@@ -12,10 +12,10 @@ import jeep.tuple.Tuple3;
 public abstract class EnergyProfilerJalen extends EnergyProfiler {
 	/* CONSTRUCTORS */
 	
-	protected EnergyProfilerJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected EnergyProfilerJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testClassesParam);
 	}
-	protected EnergyProfilerJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected EnergyProfilerJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testCode, testPackageName, testClassName);
 	}
 	protected EnergyProfilerJalen() {

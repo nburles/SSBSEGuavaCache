@@ -25,13 +25,15 @@ import jeep.tuple.Tuple3;
  */
 public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 	private static final String debugJava = "/home/nburles/OpenJDK8/build/linux-x86_64-normal-server-fastdebug/jdk/bin/java";
+	// Prints a Bytecode Histogram after execution, disables JIT, increases initial heap size, increases initial Eden size
+	private static final String debugOptions = " -XX:+PrintBytecodeHistogram -Djava.compiler=NONE -Xms100m -Xmn50m";
 
 	/* CONSTRUCTORS */
 	
-	public EnergyProfilerBytecodeTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerBytecodeTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testClassesParam);
 	}
-	public EnergyProfilerBytecodeTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerBytecodeTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testCode, testPackageName, testClassName);
 	}
 	public EnergyProfilerBytecodeTrace() {
@@ -97,7 +99,7 @@ public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 	 * 
 	 * @return double fitness - energy used in joules
 	 */
-	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException, FailedToRunException {
 		// Write java
 		EnergyProfiler.writeCode(code, packageName, className);
 		
@@ -108,9 +110,9 @@ public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 		ByteArrayOutputStream outBAOS = new ByteArrayOutputStream();
 		PrintStream outPS = new PrintStream(outBAOS);
 		if (null == runClass) { // if runClass is null, then the provided code contains the main method
-			EnergyProfiler.runCode(debugJava + " -XX:+PrintBytecodeHistogram", null, packageName, className, params, null, outPS, null, outPS);
+			EnergyProfiler.runCode(debugJava + debugOptions, null, packageName, className, params, null, outPS, null, outPS);
 		} else { // otherwise run the main method provided to the constructor
-			EnergyProfiler.runCode(debugJava + " -XX:+PrintBytecodeHistogram", null, runPackage, runClass, runParams, null, outPS, null, outPS);
+			EnergyProfiler.runCode(debugJava + debugOptions, null, runPackage, runClass, runParams, null, outPS, null, outPS);
 		}
 		String[] outputLines = outBAOS.toString().split("\n");
 		
@@ -165,6 +167,12 @@ public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToCompileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToRunException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

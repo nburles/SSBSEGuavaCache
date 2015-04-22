@@ -46,9 +46,10 @@ public class EnergyProfilerSimpleJalen extends EnergyProfilerJalen {
 			"\t\tSystem.out.println(\"JALEN:\" + simplejalen_fitnessValue);\n" +
 			"\t\t// JALEN\n";
 
+
 	/* CONSTRUCTORS */
 		
-	public EnergyProfilerSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		// TODO: Why can't I use super() anywhere other than at the top?!
 		if (null == runCode || null == runPackageName || null == runClassName || null == runParameters || null == testClassesParam) {
 			throw new NullPointerException("Cannot provide null as parameters, please just provide empty strings / string array");
@@ -74,7 +75,7 @@ public class EnergyProfilerSimpleJalen extends EnergyProfilerJalen {
 		runClass = runClassName;
 		runParams = runParameters;
 	}
-	public EnergyProfilerSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		// TODO: Why can't I use super() anywhere other than at the top?!
 		if (null == runCode || null == runPackageName || null == runClassName || null == runParameters || null == testCode || null == testPackageName || null == testClassName) {
 			throw new NullPointerException("Cannot provide null as parameters, please just provide empty strings / string array");
@@ -187,7 +188,7 @@ public class EnergyProfilerSimpleJalen extends EnergyProfilerJalen {
 	 * @return double fitness - energy used in joules
 	 */
 	@Override
-	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException, FailedToRunException {
 		if (null == runClass) { // if runClass is null, then the provided code contains the main method
 			// Inject Jalen
 			code = injectJalen(code);
@@ -252,6 +253,12 @@ public class EnergyProfilerSimpleJalen extends EnergyProfilerJalen {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToCompileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToRunException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -1,5 +1,6 @@
 package energyProfiler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import jeep.lang.Diag;
 import jeep.tuple.Tuple2;
 import jeep.tuple.Tuple3;
 
@@ -36,7 +38,7 @@ public abstract class EnergyProfiler {
 	 * 
 	 * testClasses => String testCode, String testPackageName, String testClassName
 	 */
-	protected EnergyProfiler(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected EnergyProfiler(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		if (null == runCode || null == runPackageName || null == runClassName || null == runParameters || null == testClassesParam) {
 			throw new NullPointerException("Cannot provide null as parameters, please just provide empty strings / string array");
 		}
@@ -71,7 +73,7 @@ public abstract class EnergyProfiler {
 	 * 
 	 * TODO: Why the **** can't I call another constructor in Java without it being "the first statement"?!
 	 */
-	protected EnergyProfiler(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected EnergyProfiler(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		if (null == runCode || null == runPackageName || null == runClassName || null == runParameters || null == testCode || null == testPackageName || null == testClassName) {
 			throw new NullPointerException("Cannot provide null as parameters, please just provide empty strings / string array");
 		}
@@ -164,11 +166,12 @@ public abstract class EnergyProfiler {
 	/*
 	 * Compiles the code, given package and class names
 	 */
-	protected static void compileCode(String packageName, String className) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		int retVal = EnergyProfiler.runExternal("javac -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + "/src:" + System.getProperty("user.dir") + "/srcMod -d " + System.getProperty("user.dir") + "/bin srcMod/" + getPathToClass(packageName, className) + ".java", null, null, null, null, null);
+	protected static void compileCode(String packageName, String className) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
+		int retVal = EnergyProfiler.runExternal("javac -J-Xss10m -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + "/src:" + System.getProperty("user.dir") + "/srcMod -d " + System.getProperty("user.dir") + "/bin srcMod/" + getPathToClass(packageName, className) + ".java", null, null, null, null, null);
 		if (0 != retVal) {
-			System.out.println(String.join("\n", Files.readAllLines(Paths.get(getPathToClass(packageName, className) + ".java"))));
-			throw new UnsupportedOperationException("Failed to compile: " + retVal); // TODO: create custom exception
+			Diag.println("javac -J-Xss10m -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + "/src:" + System.getProperty("user.dir") + "/srcMod -d " + System.getProperty("user.dir") + "/bin srcMod/" + getPathToClass(packageName, className) + ".java");
+			//Diag.println(String.join("\n", Files.readAllLines(Paths.get("srcMod/" + getPathToClass(packageName, className) + ".java"))));
+			throw new FailedToCompileException("Failed to compile: " + retVal);
 		}
 		// TODO: use reflective compilation... currently doesn't compile required classes!
         /*DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -203,11 +206,16 @@ public abstract class EnergyProfiler {
 	/*
 	 * Runs the code, given command, package and class names, streams, and params
 	 */
-	protected static void runCode(String command, String[] envp, String packageName, String className, String[] params, String outType, PrintStream outPS, String errorType, PrintStream errorPS) throws IOException, InterruptedException {
+	protected static void runCode(String command, String[] envp, String packageName, String className, String[] params, String outType, PrintStream outPS, String errorType, PrintStream errorPS) throws IOException, InterruptedException, FailedToRunException {
+		ByteArrayOutputStream errBAOS = new ByteArrayOutputStream();
+		if (null == errorPS) {
+			errorPS = new PrintStream(errBAOS);
+		}
 		int retVal = EnergyProfiler.runExternal(command + " -cp " + System.getProperty("java.class.path") + " " + getPathToClass(packageName, className) + getParamString(params), envp, outType, outPS, errorType, errorPS);
 		if (0 != retVal) {
-			System.out.println(command + " -cp " + System.getProperty("java.class.path") + " " + getPathToClass(packageName, className) + getParamString(params));
-			throw new UnsupportedOperationException("Failed to run: " + retVal); // TODO: create custom exception
+			Diag.println(command + " -cp " + System.getProperty("java.class.path") + " " + getPathToClass(packageName, className) + getParamString(params));
+			Diag.println(errBAOS.toString());
+			throw new FailedToRunException("Failed to run: " + retVal);
 		}
 	}
 	
@@ -249,11 +257,11 @@ public abstract class EnergyProfiler {
 	 * the specific implementations use), therefore lower is better.
 	 * POSITIVE_INFINITY indicates an error (maximum / worst fitness)
 	 */
-	abstract public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	abstract public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException, FailedToRunException;
 	/*
 	 * This version should only work if a non-default constructor is used
 	 */
-	public double fitness(String code, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public double fitness(String code, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException, FailedToRunException {
 		if (null == testClasses || 1 != testClasses.size()) {
 			throw new NullPointerException("Cannot use this version of fitness method with the default constructor");
 		}

@@ -20,10 +20,10 @@ import jeep.tuple.Tuple3;
 public class EnergyProfilerSuperSimpleJalen extends EnergyProfilerJalen {
 	/* CONSTRUCTORS */
 	
-	public EnergyProfilerSuperSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerSuperSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testClassesParam);
 	}
-	public EnergyProfilerSuperSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerSuperSimpleJalen(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testCode, testPackageName, testClassName);
 	}
 	public EnergyProfilerSuperSimpleJalen() {
@@ -42,7 +42,7 @@ public class EnergyProfilerSuperSimpleJalen extends EnergyProfilerJalen {
 	 * 
 	 * @return double fitness - time used in seconds
 	 */
-	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException, FailedToRunException {
 		// Write java
 		EnergyProfiler.writeCode(code, packageName, className);
 		
@@ -111,6 +111,12 @@ public class EnergyProfilerSuperSimpleJalen extends EnergyProfilerJalen {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToCompileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToRunException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

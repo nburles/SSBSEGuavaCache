@@ -39,10 +39,10 @@ public class EnergyProfilerBTrace extends EnergyProfiler {
 
 	/* CONSTRUCTORS */
 	
-	public EnergyProfilerBTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerBTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, List<Tuple3<String, String, String>> testClassesParam) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testClassesParam);
 	}
-	public EnergyProfilerBTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public EnergyProfilerBTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
 		super(runCode, runPackageName, runClassName, runParameters, testCode, testPackageName, testClassName);
 	}
 	public EnergyProfilerBTrace() {
@@ -87,7 +87,7 @@ public class EnergyProfilerBTrace extends EnergyProfiler {
 	 * 
 	 * @return double fitness - energy used in nJ
 	 */
-	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public double fitness(String code, String packageName, String className, String[] params) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException, FailedToRunException {
 		// Write java
 		EnergyProfiler.writeCode(code, packageName, className);
 
@@ -148,6 +148,12 @@ public class EnergyProfilerBTrace extends EnergyProfiler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToCompileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedToRunException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

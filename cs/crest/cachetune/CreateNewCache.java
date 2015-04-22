@@ -13,7 +13,7 @@ public class CreateNewCache {
 		template = new String[9];
 		for (int i = 0; i < 9; ++i) {
 			try {
-				template[i] = new String(Files.readAllBytes( Paths.get( "src/cs/crest/cachetune/cacheTemplate" + Integer.toString(i) + ".java.txt" ) ) );
+				template[i] = new String(Files.readAllBytes( Paths.get( "cs/crest/cachetune/cacheTemplate" + Integer.toString(i) + ".java.txt" ) ) );
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

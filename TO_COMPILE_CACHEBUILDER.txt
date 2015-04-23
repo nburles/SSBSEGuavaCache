@@ -1,3 +1,5 @@
 javac -cp bin:lib/javax.inject-1.jar:lib/jsr305-1.3.9.jar:src -sourcepath src/ -d bin/ src/com/google/common/cache/CacheBuilder.java
 
 For some reason gives errors the first time, but works if you run it again!
+
+javac -cp .:lib/javax.inject-1.jar:lib/jsr305-1.3.9.jar com/google/common/cache/CacheBuilder.java

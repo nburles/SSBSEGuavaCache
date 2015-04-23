@@ -167,9 +167,9 @@ public abstract class EnergyProfiler {
 	 * Compiles the code, given package and class names
 	 */
 	protected static void compileCode(String packageName, String className) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
-		int retVal = EnergyProfiler.runExternal("javac -J-Xss10m -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + "/src:" + System.getProperty("user.dir") + "/srcMod -d " + System.getProperty("user.dir") + "/bin srcMod/" + getPathToClass(packageName, className) + ".java", null, null, null, null, null);
+		int retVal = EnergyProfiler.runExternal("javac -J-Xss10m -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + ":" + System.getProperty("user.dir") + "/srcMod srcMod/" + getPathToClass(packageName, className) + ".java", null, null, null, null, null);
 		if (0 != retVal) {
-			Diag.println("javac -J-Xss10m -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + "/src:" + System.getProperty("user.dir") + "/srcMod -d " + System.getProperty("user.dir") + "/bin srcMod/" + getPathToClass(packageName, className) + ".java");
+			Diag.println("javac -J-Xss10m -cp " + System.getProperty("java.class.path") + " -sourcepath " + System.getProperty("user.dir") + ":" + System.getProperty("user.dir") + "/srcMod srcMod/" + getPathToClass(packageName, className) + ".java");
 			//Diag.println(String.join("\n", Files.readAllLines(Paths.get("srcMod/" + getPathToClass(packageName, className) + ".java"))));
 			throw new FailedToCompileException("Failed to compile: " + retVal);
 		}

@@ -29,10 +29,10 @@ public class Prob extends Problem implements SimpleProblemForm {
 	static {
 		try {
 			energyProfiler = new EnergyProfilerBytecodeTrace(
-				"",//runCode,
-				"",//runPackageName,
-				"",//runClassName,
-				new String[]{},
+				"",//new String(Files.readAllBytes( Paths.get( "cs/crest/cachetune/RunFitness.java" ) ) ),
+				"cs.crest.cachetune",
+				"RunFitness",
+				new String[]{"--graphs", "~/Desktop/TriMet", "--router", "TriMet", "--analyst", "--server"},
 				new String(Files.readAllBytes( Paths.get( "com/google/common/cache/CacheBuilder.java" ) ) ),
 				"com.google.common.cache",
 				"CacheBuilder"

@@ -1,0 +1,4 @@
+org.geotools.xml.xLink.XLinkSchema
+org.geotools.xml.gml.GMLSchema
+org.geotools.xml.filter.FilterSchema
+org.geotools.data.wfs.v1_0_0.xml.WFSSchema

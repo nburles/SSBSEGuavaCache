@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jeep.tuple.Tuple2;
 import jeep.tuple.Tuple3;
 
 /*
@@ -26,7 +27,9 @@ import jeep.tuple.Tuple3;
 public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 	private static final String debugJava = "/home/nburles/OpenJDK8/build/linux-x86_64-normal-server-fastdebug/jdk/bin/java";
 	// Prints a Bytecode Histogram after execution, disables JIT, increases initial heap size, increases initial Eden size
-	private static final String debugOptions = " -XX:+PrintBytecodeHistogram -Djava.compiler=NONE -Xms100m -Xmn50m";
+	private static final String debugOptions = " -XX:+PrintBytecodeHistogram -Djava.compiler=NONE -Xmx4G -Xms100m -Xmn50m";
+	private static final String jitOptions = " -XX:+PrintBytecodeHistogram -Xmx4G -Xms100m -Xmn50m";
+	private static String javaOptions = debugOptions;
 
 	/* CONSTRUCTORS */
 	
@@ -34,12 +37,43 @@ public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 		super(runCode, runPackageName, runClassName, runParameters, testClassesParam);
 	}
 	public EnergyProfilerBytecodeTrace(String runCode, String runPackageName, String runClassName, String[] runParameters, String testCode, String testPackageName, String testClassName) throws IOException, InterruptedException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FailedToCompileException {
-		super(runCode, runPackageName, runClassName, runParameters, testCode, testPackageName, testClassName);
+		//super(runCode, runPackageName, runClassName, runParameters, testCode, testPackageName, testClassName);
+		
+		if (null == runCode || null == runPackageName || null == runClassName || null == runParameters || null == testCode || null == testPackageName || null == testClassName) {
+			throw new NullPointerException("Cannot provide null as parameters, please just provide empty strings / string array");
+		}
+		
+		testClasses = new ArrayList<Tuple2<String, String>>();
+
+		// Write java
+		EnergyProfiler.writeCode(testCode, testPackageName, testClassName);
+		testClasses.add(Tuple2.cons(testPackageName, testClassName));
+		
+		// Compile java
+		EnergyProfiler.compileCode(testPackageName, testClassName);
+		
+		// Set command to run
+		runPackage = runPackageName;
+		runClass = runClassName;
+		runParams = runParameters;
+	
+		//		javac -cp .:lib/javax.inject-1.jar:lib/jsr305-1.3.9.jar com/google/common/cache/CacheBuilder.java
 	}
 	public EnergyProfilerBytecodeTrace() {
 	}
 	
 	/* USEFUL METHODS */
+	
+	/*
+	 * Enables or disables the use of JIT compilation (using JIT increases the non-determinism of an execution)
+	 */
+	public void useJIT(boolean useJIT) {
+		if (useJIT) {
+			javaOptions = jitOptions;
+		} else {
+			javaOptions = debugOptions;
+		}
+	}
 	
 	/*
 	 * Extracts the bytecode counts from a stdout String[]
@@ -106,14 +140,21 @@ public class EnergyProfilerBytecodeTrace extends EnergyProfiler {
 		// Compile java
 		EnergyProfiler.compileCode(packageName, className);
 		
+		// Copy class files
+		
+		
 		// Run java
 		ByteArrayOutputStream outBAOS = new ByteArrayOutputStream();
 		PrintStream outPS = new PrintStream(outBAOS);
-		if (null == runClass) { // if runClass is null, then the provided code contains the main method
-			EnergyProfiler.runCode(debugJava + debugOptions, null, packageName, className, params, null, outPS, null, outPS);
-		} else { // otherwise run the main method provided to the constructor
-			EnergyProfiler.runCode(debugJava + debugOptions, null, runPackage, runClass, runParams, null, outPS, null, outPS);
-		}
+		EnergyProfiler.runCode(debugJava + javaOptions, null, "org.opentripplanner.standalone", "OTPMain", params, null, outPS, null, outPS);
+		//if (null == runClass) { // if runClass is null, then the provided code contains the main method
+			//EnergyProfiler.runCode(debugJava + javaOptions, null, packageName, className, params, null, outPS, null, outPS);
+		//} else { // otherwise run the main method provided to the constructor
+			//EnergyProfiler.runCode(debugJava + javaOptions, null, runPackage, runClass, runParams, null, outPS, null, outPS);
+		//}
+		
+		// Run script!
+		
 		String[] outputLines = outBAOS.toString().split("\n");
 		
 		// Calculate fitness

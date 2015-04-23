@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 /*
  * From http://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html
  */
-class StreamGobbler extends Thread {
+public class StreamGobbler extends Thread {
     InputStream is;
     String type;
     OutputStream os;

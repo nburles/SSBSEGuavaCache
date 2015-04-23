@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Implementation-Title: com.sun.media.imageio
+Implementation-Version: 1.1
+Archiver-Version: Plexus Archiver
+Built-By: nburles
+Specification-Vendor: Sun Microsystems, Inc.
+Specification-Title: Java Advanced Imaging Image I/O
+                 
+                            Tools
+Implementation-Vendor: Sun Microsystems, Inc.
+Main-Class: org.opentripplanner.standalone.OTPMain
+Extension-Name: com.sun.media.imageio
+Created-By: Apache Maven
+Build-Jdk: 1.8.0_40
+Specification-Version: 1.1
+

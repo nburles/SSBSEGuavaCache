@@ -1,4 +1,4 @@
-;
+L;
   long maximumWeight = UNSET_INT;
   Weigher<? super K, ? super V> weigher;
 
